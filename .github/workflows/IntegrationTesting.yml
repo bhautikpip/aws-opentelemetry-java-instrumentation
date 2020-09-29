@@ -1,0 +1,27 @@
+name: Integration Testing
+on: [pull_request]
+
+jobs:
+  build_Java_Agent:
+    name: Build AWS OTel Java agent
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 14
+
+      - uses: gradle/wrapper-validation-action@v1
+
+      - name: Build snapshot with Gradle
+        uses: burrunan/gradle-cache-action@v1
+        with:
+          arguments: build snapshot --stacktrace -PenableCoverage=true
+
+      - name: Upload to GitHub Actions
+        uses: actions/upload-artifact@v2
+        with:
+          name: aws-opentelemetry-agent.jar
+          path: otelagent/build/libs/aws-opentelemetry-agent-*.jar
