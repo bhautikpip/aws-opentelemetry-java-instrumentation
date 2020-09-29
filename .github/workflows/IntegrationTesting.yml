@@ -15,10 +15,10 @@ jobs:
 
       - uses: gradle/wrapper-validation-action@v1
 
-      - name: Build snapshot with Gradle
+      - name: Build with Gradle
         uses: burrunan/gradle-cache-action@v1
         with:
-          arguments: build snapshot --stacktrace -PenableCoverage=true
+          arguments: build --stacktrace -PenableCoverage=true
 
       - name: Upload to GitHub Actions
         uses: actions/upload-artifact@v2
