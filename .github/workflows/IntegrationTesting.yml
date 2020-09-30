@@ -56,4 +56,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: springapp.jar
-          path: build/libs/SpringApp-1.0.jar
+          path: build/libs/springboot-1.0.jar
