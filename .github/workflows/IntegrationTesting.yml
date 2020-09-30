@@ -25,3 +25,35 @@ jobs:
         with:
           name: aws-opentelemetry-agent.jar
           path: otelagent/build/libs/aws-opentelemetry-agent-*.jar
+
+  build_Web_App:
+    name: Build Web Application
+      needs: build_Java_Agent
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Pull in source code from WebApp Github repo
+          uses: actions/checkout@v2
+          with:
+            repository: bhautikpip/SpringApp
+            token: ${{  secrets.PAT }}
+
+        - uses: actions/setup-java@v1
+          with:
+            java-version: 13
+
+        - uses: gradle/wrapper-validation-action@v1
+
+        - name: Build with Gradle
+          uses: burrunan/gradle-cache-action@v1
+          with:
+            arguments: build --stacktrace -PenableCoverage=true
+
+        - name: view th fs
+          run: ls
+
+        - name: Upload WebApp build artifact
+          uses: actions/upload-artifact@v2
+          with:
+            name: springapp.jar
+            path: build/libs/SpringApp-1.0.jar
