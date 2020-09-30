@@ -40,7 +40,7 @@ jobs:
 
       - uses: actions/setup-java@v1
         with:
-          java-version: 13
+          java-version: 14
 
       - uses: gradle/wrapper-validation-action@v1
 
@@ -57,3 +57,34 @@ jobs:
         with:
           name: springapp.jar
           path: build/libs/springboot-1.0.jar
+
+  deploy_Test_Java_Agent:
+    name: Deploy and Test AWS OTel Java agent
+    needs: build_Web_App
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 14
+
+      - name: Download AWS OTel Jave agent jar
+        uses: actions/download-artifact@v2
+        with:
+          name: aws-opentelemetry-agent.jar
+
+      - name: Download Spring Boot App jar
+        uses: actions/download-artifact@v2
+        with:
+          name: springapp.jar
+
+      - name: Setup and Run OTel Collector
+        run: docker-compose -f .github/collector/docker-compose.yml up
+
+      - name: Run Spring Boot App with AWS Java agent
+        run: java -javaagent:aws-opentelemetry-agent.jar -jar springapp.jar
+
+      - name: hit the endpoint to see end to end
+        run: curl http://localhost:8080/aws-sdk-call
