@@ -50,7 +50,7 @@ jobs:
           arguments: build --stacktrace -PenableCoverage=true
 
       - name: view th fs
-        run: ls
+        run: ls build/libs
 
       - name: Upload WebApp build artifact
         uses: actions/upload-artifact@v2
