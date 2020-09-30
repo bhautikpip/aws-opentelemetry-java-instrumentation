@@ -82,6 +82,9 @@ jobs:
 
       - name: Setup and Run OTel Collector
         run: docker-compose -f .github/collector/docker-compose.yml up
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Run Spring Boot App with AWS Java agent
         run: java -javaagent:aws-opentelemetry-agent.jar -jar springapp.jar
