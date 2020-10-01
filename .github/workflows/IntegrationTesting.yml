@@ -80,6 +80,9 @@ jobs:
         with:
           name: springapp.jar
 
+      - name: view the fs
+        run: ls
+
       - name: Setup and Run OTel Collector
         run: docker-compose -f .github/collector/docker-compose.yml up
         env:

@@ -2,7 +2,7 @@ version: "3.2"
 services:
   otel:
     image: otel/opentelemetry-collector-contrib-dev:latest
-    command: --config /config/collector-config.yaml --log-level debug
+    command: --config /config/collector-config.yml --log-level debug
     volumes:
       - ./otel:/config
     ports:
