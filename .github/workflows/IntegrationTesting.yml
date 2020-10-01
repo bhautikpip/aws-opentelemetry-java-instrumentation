@@ -98,4 +98,4 @@ jobs:
         run: java -javaagent:$agent_jar -jar springboot-1.0.jar &
 
       - name: hit the endpoint to see end to end
-        run: curl http://127.0.0.1:8080/aws-sdk-call
+        run: curl http://localhost:8080/aws-sdk-call
