@@ -97,5 +97,10 @@ jobs:
       - name: Run Spring Boot App with AWS Java agent
         run: java -javaagent:$agent_jar -jar springboot-1.0.jar &
 
+      - name: Sleep for 60 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '60s'
+
       - name: hit the endpoint to see end to end
-        run: curl http://localhost:8080/aws-sdk-call
+        run: curl http://127.0.0.1:8080/aws-sdk-call
