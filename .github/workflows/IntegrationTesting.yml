@@ -84,13 +84,13 @@ jobs:
         run: ls
 
       - name: Setup and Run OTel Collector
-        run: docker-compose -f .github/collector/docker-compose.yml up
+        run: docker-compose -f .github/collector/docker-compose.yml up &
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Run Spring Boot App with AWS Java agent
-        run: java -javaagent:aws-opentelemetry-agent.jar -jar springapp.jar
+        run: java -javaagent:aws-opentelemetry-agent-*.jar -jar springboot-1.0.jar &
 
       - name: hit the endpoint to see end to end
-        run: curl http://localhost:8080/aws-sdk-call
+        run: curl http://127.0.0.1:8080/aws-sdk-call
