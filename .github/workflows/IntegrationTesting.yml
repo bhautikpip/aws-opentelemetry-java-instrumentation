@@ -20,6 +20,9 @@ jobs:
         with:
           arguments: build --stacktrace -PenableCoverage=true
 
+      - name: jar file name
+        run: ls otelagent/build/libs
+
       - name: Upload to GitHub Actions
         uses: actions/upload-artifact@v2
         with:
