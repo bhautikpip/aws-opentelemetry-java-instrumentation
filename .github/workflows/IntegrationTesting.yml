@@ -61,6 +61,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v2
+
       - uses: actions/setup-java@v1
         with:
           java-version: 14
@@ -72,10 +74,8 @@ jobs:
 
       - name: store jar file name
         run: |
-          value=`ls`
+          value=`ls aws-opentelemetry-agent-*`
           echo ::set-env name=agent_jar::"$value"
-
-      - uses: actions/checkout@v2
 
       - name: print jar file name
         run: echo $agent_jar
