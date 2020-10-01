@@ -96,7 +96,7 @@ jobs:
           AWS_REGION: us-west-2
 
       - name: Run Spring Boot App with AWS Java agent
-        run: java -javaagent:$agent_jar -jar springboot-1.0.jar
+        run: java -javaagent:$agent_jar -jar springboot-1.0.jar &
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -105,7 +105,7 @@ jobs:
       - name: Sleep for 60 seconds
         uses: jakejarvis/wait-action@master
         with:
-          time: '60s'
+          time: '30s'
 
       - name: hit the endpoint to see end to end
         run: curl http://127.0.0.1:8080/aws-sdk-call
