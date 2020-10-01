@@ -93,7 +93,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Run Spring Boot App with AWS Java agent
-        run: java -javaagent:aws-opentelemetry-agent-*.jar -jar springboot-1.0.jar &
+        run: java -javaagent:aws-opentelemetry-agent-0.1.0-dev.1+ff37509.jar -jar springboot-1.0.jar &
 
       - name: hit the endpoint to see end to end
         run: curl http://127.0.0.1:8080/aws-sdk-call
