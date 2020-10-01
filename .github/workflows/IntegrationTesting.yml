@@ -20,9 +20,6 @@ jobs:
         with:
           arguments: build --stacktrace -PenableCoverage=true
 
-      - name: jar file name
-        run: ls otelagent/build/libs
-
       - name: Upload to GitHub Actions
         uses: actions/upload-artifact@v2
         with:
@@ -52,9 +49,6 @@ jobs:
         with:
           arguments: build --stacktrace -PenableCoverage=true
 
-      - name: view th fs
-        run: ls build/libs
-
       - name: Upload WebApp build artifact
         uses: actions/upload-artifact@v2
         with:
@@ -79,7 +73,9 @@ jobs:
           name: aws-opentelemetry-agent.jar
 
       - name: store jar file name
-        run: agent_jar=`ls`
+        run: |
+          value=`ls`
+          echo "agent_jar=$value" >> $GITHUB_ENV
 
       - name: print jar file name
         run: echo $agent_jar
