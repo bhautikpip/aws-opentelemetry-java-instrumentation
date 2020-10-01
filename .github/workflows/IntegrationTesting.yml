@@ -95,7 +95,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Run Spring Boot App with AWS Java agent
-        run: java -javaagent:$agent_jar -jar springboot-1.0.jar &
+        run: java -javaagent:$agent_jar -jar springboot-1.0.jar
 
       - name: Sleep for 60 seconds
         uses: jakejarvis/wait-action@master
