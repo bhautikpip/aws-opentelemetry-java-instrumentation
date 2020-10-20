@@ -35,7 +35,7 @@ jobs:
       - name: Pull in source code from WebApp Github repo
         uses: actions/checkout@v2
         with:
-          repository: bhautikpip/SpringApp
+          repository: aws-observability/aws-otel-test-framework-sample-apps
           token: ${{  secrets.PAT }}
 
       - uses: actions/setup-java@v1
@@ -47,13 +47,13 @@ jobs:
       - name: Build with Gradle
         uses: burrunan/gradle-cache-action@v1
         with:
-          arguments: build --stacktrace -PenableCoverage=true
+          arguments: build sample-apps/trace/otel-java-sample-apps/springboot --stacktrace -PenableCoverage=true
 
       - name: Upload WebApp build artifact
         uses: actions/upload-artifact@v2
         with:
           name: springapp.jar
-          path: build/libs/springboot-1.0.jar
+          path: sample-apps/trace/otel-java-sample-apps/springboot/build/libs/springboot-1.0.jar
 
   deploy_Test_Java_Agent:
     name: Deploy and Test AWS OTel Java agent
