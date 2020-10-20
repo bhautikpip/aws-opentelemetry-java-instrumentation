@@ -1,0 +1,118 @@
+name: Integration Testing
+on: [pull_request]
+
+jobs:
+  build_Java_Agent:
+    name: Build AWS OTel Java agent
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 14
+
+      - uses: gradle/wrapper-validation-action@v1
+
+      - name: Build with Gradle
+        uses: burrunan/gradle-cache-action@v1
+        with:
+          arguments: build --stacktrace -PenableCoverage=true
+
+      - name: Upload to GitHub Actions
+        uses: actions/upload-artifact@v2
+        with:
+          name: aws-opentelemetry-agent.jar
+          path: otelagent/build/libs/aws-opentelemetry-agent-*.jar
+
+  build_Web_App:
+    name: Build Web Application
+    needs: build_Java_Agent
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Pull in source code from WebApp Github repo
+        uses: actions/checkout@v2
+        with:
+          repository: aws-observability/aws-otel-test-framework-sample-apps
+          token: ${{  secrets.PAT }}
+
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 14
+
+      - uses: gradle/wrapper-validation-action@v1
+
+      - name: Build with Gradle
+        uses: burrunan/gradle-cache-action@v1
+        with:
+          arguments: build sample-apps/trace/otel-java-sample-apps/springboot --stacktrace -PenableCoverage=true
+
+      - name: Upload WebApp build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: springapp.jar
+          path: sample-apps/trace/otel-java-sample-apps/springboot/build/libs/springboot-1.0.jar
+
+  deploy_Test_Java_Agent:
+    name: Deploy and Test AWS OTel Java agent
+    needs: build_Web_App
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 14
+
+      - name: Download AWS OTel Jave agent jar
+        uses: actions/download-artifact@v2
+        with:
+          name: aws-opentelemetry-agent.jar
+
+      - name: store jar file name
+        run: |
+          value=`ls aws-opentelemetry-agent-*`
+          echo ::set-env name=agent_jar::"$value"
+
+      - name: print jar file name
+        run: echo $agent_jar
+
+      - name: Download Spring Boot App jar
+        uses: actions/download-artifact@v2
+        with:
+          name: springapp.jar
+
+      - name: view the fs
+        run: ls
+
+      - name: Setup and Run OTel Collector
+        run: |
+          docker-compose -f .github/collector/docker-compose.yml up &
+          echo ${ACCESS_KEY}
+          echo ${SECRET_ACCESS_KEY}
+        env:
+          ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Run Spring Boot App with AWS Java agent
+        run: java -javaagent:$agent_jar -jar springboot-1.0.jar &
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-west-2
+
+      - name: Sleep for 60 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '30s'
+
+      - name: hit the endpoint to see end to end
+        run: curl http://127.0.0.1:8080/aws-sdk-call
+
+      - name: Sleep for 60 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '30s'
